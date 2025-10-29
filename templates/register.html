@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng ký</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+  /* Ảnh nền tổng thể */
+  background: url('https://sf-static.upanhlaylink.com/img/image_202510254eab585eca869553b497f7ae99f2c212.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Lớp phủ mờ mịn */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); /* hỗ trợ Safari */
+  z-index: 0;
+}
+  </style>
+</head>
+
+<body>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white text-center">
+            <h4>Đăng ký tài khoản</h4>
+          </div>
+          <div class="card-body">
+            <!-- Hiển thị thông báo flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+               <div class="mb-3">
+                <label class="form-label">Họ và tên</label>
+                <input type="text" name="name" class="form-control"placeholder="Tên học sinh (ví dụ: Nguyễn Văn A)" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" name="username" class="form-control" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" class="form-control" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+            </form>
+            <div class="text-center mt-3">
+              <a href="{{ url_for('login') }}" class="text-decoration-none">Đã có tài khoản? Đăng nhập</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ứng Dụng Mô Hình Ngôn Ngữ Lớn Hỗ Trợ Học Tập</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']], processEscapes: true }
+    });
+  </script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          screens: { 'xs': '480px' },
+          colors: {
+            'primary-blue': '#1e40af',
+            'primary-hover': '#1e3a8a',
+            'accent-green': '#10b981',
+            'accent-yellow': '#f59e0b',
+            'neutral-gray': '#f3f4f6',
+          },
+          boxShadow: {
+            'modern': '0 4px 12px rgba(0, 0, 0, 0.1)',
+            'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
+          },
+          borderRadius: { 'xl': '1rem' },
+        },
+      },
+    }
+  </script>
+  <style>
+    /* Menubar slide from left */
+    #menubar {
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(-100%);
+    }
+
+    #menubar.active {
+      transform: translateX(0);
+    }
+
+    /* Chat container gradient border */
+    #chat-messages {
+      border-radius: 1rem;
+    }
+
+    /* Chat bubble styling */
+    .chat-bubble.ai-message {
+      background: linear-gradient(145deg, #ffffff, #e6f3fa);
+      border: 1px solid rgba(30, 64, 175, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-bubble.user-message {
+      background: linear-gradient(145deg, #1e40af, #1e3a8a);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Typing animation */
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #1e40af, #10b981);
+      border-radius: 50%;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0.7;
+      }
+    }
+
+    /* AI icon */
+    .ai-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+
+<body class="bg-neutral-gray min-h-screen flex flex-col font-sans antialiased">
+  <!-- Header -->
+  <header class="bg-primary-blue text-white shadow-modern sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <h1 class="text-[10px] xs:text-sm sm:text-lg md:text-xl font-bold leading-tight max-w-[70%]">
+        💬 ỨNG DỤNG MÔ HÌNH NGÔN NGỮ LỚN HỖ TRỢ HỌC SINH HỌC TẬP SONG NGỮ KHOA HỌC TỰ NHIÊN
+      </h1>
+      <button id="menu-toggle" class="text-white hover:text-gray-200 focus:outline-none">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Menubar Slide-in -->
+  <nav id="menubar" class="fixed top-0 left-0 w-64 h-full bg-white shadow-modern z-50 flex flex-col">
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-lg font-semibold text-primary-blue">🎯 Tính Năng</h2>
+      <button id="close-menu" class="text-gray-600 hover:text-gray-800">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex flex-col gap-3 p-4">
+      <a href="https://www.canva.com/vi_vn/tao-anh-ai/"
+        class="flex items-center gap-2 bg-gradient-to-r from-blue-100 to-blue-50 hover:from-blue-200 text-primary-blue font-medium py-2.5 px-4 rounded-lg transition text-sm xs:text-base">
+        🎨 Tạo hình ảnh bằng AI
+      </a>
+      <a href="https://www.canva.com/vi_vn/thiet-ke/viet-truyen-bang-ai/"
+        class="flex items-center gap-2 bg-gradient-to-r from-green-100 to-green-50 hover:from-green-200 text-accent-green font-medium py-2.5 px-4 rounded-lg transition text-sm xs:text-base">
+        📚 Tạo truyện bằng AI
+      </a>
+      <a href="/logout"
+        class="flex items-center gap-2 bg-gradient-to-r from-red-100 to-red-50 hover:from-red-200 text-red-600 font-medium py-2.5 px-4 rounded-lg transition text-sm xs:text-base">
+        🚪 Đăng xuất
+      </a>
+    </div>
+  </nav>
+
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col container mx-auto px-4 sm:px-6">
+    <!-- Chat Area -->
+    <div id="chat-messages" class="flex-1 py-5 xs:py-6 sm:py-8 overflow-y-auto flex flex-col gap-4 ">
+      <div
+        class="ai-message chat-bubble rounded-xl p-4 max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] self-start text-sm xs:text-base mathjax-container">
+        <strong>Xin chào các em 👋!</strong><br>
+        Thầy là <span class="font-medium text-primary-blue">trợ lý học tập bộ môn Khoa học Tự nhiên song ngữ</span> —
+        gồm
+        <span class="bg-accent-green text-white px-2 py-1 rounded text-xs xs:text-sm">Toán</span>,
+        <span class="bg-primary-blue text-white px-2 py-1 rounded text-xs xs:text-sm">Vật lý</span>,
+        <span class="bg-accent-yellow text-white px-2 py-1 rounded text-xs xs:text-sm">Hóa học</span> và
+        <span class="bg-green-500 text-white px-2 py-1 rounded text-xs xs:text-sm">Sinh học</span><br><br>
+        Các em có thể đặt câu hỏi, yêu cầu giải thích, hoặc nhờ thầy hướng dẫn bài tập — thầy sẽ cùng các em học tập và
+        khám phá khoa học thật dễ hiểu và thú vị nhé!<br><br>
+
+        <strong>Hello everyone 👋!</strong><br>
+        I'm your <span class="font-medium text-primary-blue">Bilingual Natural Science learning assistant</span> —
+        covering
+        <span class="bg-accent-green text-white px-2 py-1 rounded text-xs xs:text-sm">Math</span>,
+        <span class="bg-primary-blue text-white px-2 py-1 rounded text-xs xs:text-sm">Physics</span>,
+        <span class="bg-accent-yellow text-white px-2 py-1 rounded text-xs xs:text-sm">Chemistry</span>, and
+        <span class="bg-green-500 text-white px-2 py-1 rounded text-xs xs:text-sm">Biology</span><br><br>
+        You can ask questions, request explanations, or get help with exercises — I’ll study with you and make science
+        easy
+        and exciting to learn!
+      </div>
+    </div>
+
+
+    <!-- Chat Input -->
+    <form id="chat-form"
+      class="p-4 bg-white border-2 border-transparent border-image: linear-gradient(to right, #1e40af, #10b981) 1 shadow-card flex items-center gap-2 xs:gap-3 rounded-xl mt-4"
+      style="margin-top:6cm; margin-bottom:2cm;">
+      <input type="text" id="message" name="message" placeholder="Nhập câu hỏi của bạn..."
+        class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:ring-2 focus:ring-primary-blue outline-none text-gray-800 text-sm xs:text-base transition duration-200">
+      <button type="submit"
+        class="bg-primary-blue hover:bg-primary-hover text-white rounded-full px-4 sm:px-5 py-2 font-semibold transition flex items-center gap-2 text-sm xs:text-base whitespace-nowrap">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>
+        Gửi
+      </button>
+    </form>
+
+
+
+
+
+  </main>
+
+  <script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMenu = document.getElementById('close-menu');
+    const menubar = document.getElementById('menubar');
+    const overlay = document.getElementById('overlay');
+
+    menuToggle.addEventListener('click', () => {
+      menubar.classList.add('active');
+      overlay.classList.remove('hidden');
+    });
+    closeMenu.addEventListener('click', () => {
+      menubar.classList.remove('active');
+      overlay.classList.add('hidden');
+    });
+    overlay.addEventListener('click', () => {
+      menubar.classList.remove('active');
+      overlay.classList.add('hidden');
+    });
+
+    // Chat logic
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message');
+    const chatMessages = document.getElementById('chat-messages');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+
+      // User message
+      const userDiv = document.createElement('div');
+      userDiv.className = 'user-message chat-bubble rounded-xl p-4 self-end max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] text-sm xs:text-base';
+      userDiv.textContent = message;
+      chatMessages.appendChild(userDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      input.value = '';
+
+      // Typing effect
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'chat-bubble rounded-xl p-4 self-start flex gap-2';
+      typingDiv.innerHTML = `
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>`;
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        chatMessages.removeChild(typingDiv);
+
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'ai-message chat-bubble rounded-xl p-4 max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] self-start text-sm xs:text-base mathjax-container';
+        aiDiv.innerHTML = data.response || '⚠️ Lỗi: Không có phản hồi.';
+        chatMessages.appendChild(aiDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "chat-messages"]);
+      } catch (err) {
+        chatMessages.removeChild(typingDiv);
+        const errDiv = document.createElement('div');
+        errDiv.className = 'chat-bubble rounded-xl p-4 self-start text-red-600 text-sm xs:text-base';
+        errDiv.textContent = '⚠️ Lỗi kết nối, vui lòng thử lại.';
+        chatMessages.appendChild(errDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    });
+
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') form.dispatchEvent(new Event('submit'));
+    });
+  </script>
+</body>
+<footer class="bg-gray-50 border-t border-gray-200 py-8 px-5 sm:px-10">
+  <div
+    class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 sm:gap-10">
+
+    <!-- Ảnh tác giả -->
+    <img src="https://sf-static.upanhlaylink.com/img/image_20251028961626dff513ce380a1aac69c0f1ca0c.jpg"
+      alt="Giáo viên Lê Quang Phúc"
+      class="w-24 h-24 sm:w-32 sm:h-32 lg:w-36 lg:h-36 rounded-full border-2 sm:border-4 border-primary-blue shadow-md object-cover" />
+
+    <!-- Nội dung -->
+    <div class="flex-1 max-w-6xl">
+      <h2 class="text-base sm:text-lg font-semibold text-primary-blue mb-2">
+        ỨNG DỤNG MÔ HÌNH NGÔN NGỮ LỚN HỖ TRỢ HỌC SINH HỌC TẬP SONG NGỮ KHOA HỌC TỰ NHIÊN
+      </h2>
+      <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+        Dự án được phát triển nhằm mang đến cho học sinh môi trường tự học thông minh,
+        kết hợp giữa trí tuệ nhân tạo và phương pháp giáo dục hiện đại.<br><br>
+        Tác giả dự án là <span class="font-medium">Giáo viên Lê Quang Phúc</span>,
+        hiện đang công tác tại <span class="font-medium">Trường THCS Trung Thành – Linh Hồ – Tuyên Quang</span>.<br><br>
+        Liên hệ:
+        <a href="mailto:lequangphuctq81@gmail.com" class="text-primary-blue hover:underline">
+          lequangphuctq81@gmail.com
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Dòng bản quyền -->
+  <div class="mt-8 border-t border-gray-200 pt-4 text-center text-xs sm:text-sm text-gray-500">
+    © Trường THCS Trung Thành – Linh Hồ – Tuyên Quang — Phát triển vì tương lai học tập thông minh.
+  </div>
+</footer>
+
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kiến thức và đánh giá thái độ & năng lực học sinh</title>
+    <style>
+        /* Reset cơ bản */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 16px;
+            color: #1f2937;
+        }
+
+        h1 {
+            font-size: 28px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 22px;
+        }
+
+        h3 {
+            font-size: 18px;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn-yellow {
+            background-color: #facc15;
+        }
+        .btn-yellow:hover {
+            background-color: #eab308;
+            transform: translateY(-1px);
+        }
+
+        .btn-red {
+            background-color: #ef4444;
+        }
+        .btn-red:hover {
+            background-color: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-upload {
+            background-color: #f59e0b;
+        }
+        .btn-upload:hover {
+            background-color: #d97706;
+            transform: translateY(-1px);
+        }
+
+        /* Flash messages */
+        .flash-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .flash-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* Form */
+        input[type="file"] {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            flex-grow: 1;
+        }
+
+        form.flex-row {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* PDF list */
+        ul.pdf-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+        ul.pdf-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        ul.pdf-list li span {
+            max-width: 70%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        th:nth-child(1), td:nth-child(1) { width: 10%; }
+        th:nth-child(2), td:nth-child(2) { width: 25%; }
+        th:nth-child(3), td:nth-child(3) { width: 15%; }
+        th:nth-child(4), td:nth-child(4) { width: 30%; }
+        th:nth-child(5), td:nth-child(5) { width: 20%; }
+
+        td.lydo, td.history {
+            overflow-y: auto;
+            padding: 8px;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Scrollbar tùy chỉnh */
+        td.lydo::-webkit-scrollbar,
+        td.history::-webkit-scrollbar {
+            width: 6px;
+        }
+        td.lydo::-webkit-scrollbar-track,
+        td.history::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 6px;
+        }
+        td.lydo::-webkit-scrollbar-thumb,
+        td.history::-webkit-scrollbar-thumb {
+            background-color: #9ca3af;
+            border-radius: 6px;
+        }
+
+        /* Responsive */
+        @media(max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 20px;
+            }
+            h3 {
+                font-size: 16px;
+            }
+            form.flex-row {
+                flex-direction: column;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+                height: 120px;
+            }
+            ul.pdf-list li span {
+                max-width: 60%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card" style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap;">
+            <h1 style="color: red;">Quản lý kiến thức và đánh giá thái độ & năng lực học sinh</h1>
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-red" style="position:absolute; top:24px; right:24px;">Đăng xuất</a>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ 'flash-success' if category=='success' else 'flash-error' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Quản lý PDF -->
+        <div class="card">
+            <h2>Quản lý File PDF (Tài liệu Toán THCS)</h2>
+            <form method="POST" enctype="multipart/form-data" class="flex-row">
+                <input type="file" name="file" accept=".pdf" required>
+                <button type="submit" class="btn btn-upload">Upload PDF mới</button>
+            </form>
+
+            <h3>Danh sách file PDF hiện có:</h3>
+            <ul class="pdf-list">
+                {% for pdf in pdf_files %}
+                <li>
+                    <span>• {{ pdf }}</span>
+                    <form method="POST" action="{{ url_for('delete_pdf', filename=pdf) }}" class="inline">
+                        <button type="submit" class="btn btn-red" onclick="return confirm('Bạn có chắc muốn xóa file {{ pdf }}?');">Xóa</button>
+                    </form>
+                </li>
+                {% endfor %}
+                {% if not pdf_files %}
+                <li class="text-gray-500">Chưa có file PDF nào.</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Bảng kết quả học tập -->
+        <div class="card">
+            <h2>Kết quả Học tập của Học sinh</h2>
+            <a href="{{ url_for('export_csv') }}" class="btn btn-yellow" style="margin-bottom:12px;">Tải xuống CSV</a>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên đăng nhập</th>
+                            <th>Năng lực (Level)</th>
+                            <th>Lý do</th>
+                            <th>Lịch sử (History)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in user_data %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.level }}</td>
+                            <td class="lydo">{{ user.lydo }}</td>
+                            <td class="history">{{ user.history }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not user_data %}
+                        <tr><td colspan="5" style="text-align:center; color:#6b7280;">Chưa có dữ liệu học sinh.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
